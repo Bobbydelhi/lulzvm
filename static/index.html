@@ -3,8 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lulzVM — Open Source Hypervisor</title>
-  <meta name="description" content="lulzVM — Lightweight open-source hypervisor management platform. Manage QEMU/KVM VMs and LXC containers from your browser.">
+  <title>lulzVM — Open Source Hypervisor Platform</title>
+  <meta name="description" content="lulzVM — Lightweight open-source hypervisor management platform. Spin up and manage QEMU/KVM virtual machines and LXC containers directly from your browser.">
+  <meta name="keywords" content="lulzVM, hypervisor, open source, KVM, QEMU, LXC, virtualization, self-hosted, cloud management, Proxmox alternative, Docker">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://github.com/Bobbydelhi/lulzvm">
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/Bobbydelhi/lulzvm">
+  <meta property="og:title" content="lulzVM — Open Source Hypervisor Platform">
+  <meta property="og:description" content="Lightweight open-source hypervisor management platform. Spin up and manage KVM virtual machines and LXC containers from a clean, modern web UI.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/Bobbydelhi/lulzvm/main/static/logo.png">
+  <meta property="og:site_name" content="lulzVM">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://github.com/Bobbydelhi/lulzvm">
+  <meta name="twitter:title" content="lulzVM — Open Source Hypervisor Platform">
+  <meta name="twitter:description" content="Lightweight open-source hypervisor management platform. Spin up and manage KVM virtual machines and LXC containers from a clean, modern web UI.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/Bobbydelhi/lulzvm/main/static/logo.png">
+
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -12,10 +32,10 @@
     <!-- Main Dashboard -->
     <div id="main-screen" style="display:flex">
       <nav class="sidebar">
-        <div class="brand">
-          <img src="/logo.png" alt="lulzVM" class="brand-logo">
+        <h1 class="brand">
+          <img src="/logo.png" alt="lulzVM Logo" class="brand-logo">
           <span>lulzVM</span>
-        </div>
+        </h1>
 
         <a href="#" class="nav-item active" data-view="dashboard" data-i18n="dashboard">Dashboard</a>
         <a href="#" class="nav-item" data-view="vms" data-i18n="vms">Virtual Machines</a>
@@ -27,8 +47,8 @@
 
         <!-- Language Switcher -->
         <div id="lang-selector" class="lang-selector">
-          <button data-lang="en" onclick="setLang('en')" class="active">EN</button>
-          <button data-lang="es" onclick="setLang('es')">ES</button>
+          <button id="btn-lang-en" data-lang="en" onclick="setLang('en')" class="active">EN</button>
+          <button id="btn-lang-es" data-lang="es" onclick="setLang('es')">ES</button>
         </div>
       </nav>
 
@@ -37,7 +57,7 @@
         <div id="community-banner" class="community-banner">
           <span id="community-msg" data-i18n="community_msg">lulzVM is open source — feel free to contribute, modify and improve it. Together we build something powerful.</span>
           <a href="https://github.com/Bobbydelhi/lulzvm" target="_blank" id="community-link" data-i18n="community_link">Contribute on GitHub</a>
-          <button onclick="this.parentElement.style.display='none'" class="banner-close">✕</button>
+          <button id="btn-close-community-banner" onclick="this.parentElement.style.display='none'" class="banner-close">✕</button>
         </div>
 
         <div id="view-dashboard" class="view">
@@ -50,7 +70,7 @@
         <div id="view-vms" class="view" style="display:none">
           <div class="view-header">
             <h2 data-i18n="vms">Virtual Machines</h2>
-            <button class="btn-primary" onclick="showCreateVMModal()" data-i18n="create_vm">+ Create VM</button>
+            <button id="btn-show-create-vm" class="btn-primary" onclick="showCreateVMModal()" data-i18n="create_vm">+ Create VM</button>
           </div>
           <div id="vms-list"></div>
         </div>
@@ -63,7 +83,7 @@
         <div id="view-storage" class="view" style="display:none">
           <div class="view-header">
             <h2 data-i18n="storage_pools">Storage Pools</h2>
-            <button class="btn-primary" onclick="showUploadISOModal()" data-i18n="upload_iso">Upload ISO</button>
+            <button id="btn-show-upload-iso" class="btn-primary" onclick="showUploadISOModal()" data-i18n="upload_iso">Upload ISO</button>
           </div>
           <div id="storage-list"></div>
           <h2 style="margin-top: 2rem" data-i18n="available_isos">Available ISOs</h2>
@@ -73,13 +93,13 @@
         <div id="view-network" class="view" style="display:none">
           <div class="view-header">
             <h2 data-i18n="net_config">Network Configuration</h2>
-            <button class="btn-primary" onclick="applyNetwork()" data-i18n="apply_changes">Apply Changes</button>
+            <button id="btn-apply-network" class="btn-primary" onclick="applyNetwork()" data-i18n="apply_changes">Apply Changes</button>
           </div>
           <h3 data-i18n="phys_ifaces" style="margin-bottom:.5rem">Physical Interfaces</h3>
           <div id="interfaces-list"></div>
           <h3 data-i18n="linux_bridges" style="margin-top:2rem; margin-bottom:.5rem">Linux Bridges</h3>
           <div id="bridges-list"></div>
-          <button class="btn-sm btn-accent" style="margin-top:1rem" onclick="showCreateBridgeModal()" data-i18n="create_bridge">+ Create Bridge</button>
+          <button id="btn-show-create-bridge" class="btn-sm btn-accent" style="margin-top:1rem" onclick="showCreateBridgeModal()" data-i18n="create_bridge">+ Create Bridge</button>
         </div>
       </main>
     </div>
@@ -96,8 +116,8 @@
       <label><span data-i18n="disk">Disk (GB)</span><input id="new-disk" type="number" value="10" min="1"></label>
       <label><span data-i18n="iso_opt">ISO (optional)</span><select id="new-iso-select"><option value="">None</option></select></label>
       <div class="modal-actions">
-        <button onclick="closeModal('modal-create-vm')" data-i18n="cancel">Cancel</button>
-        <button class="btn-primary" onclick="doCreateVM()" data-i18n="create">Create</button>
+        <button id="btn-cancel-create-vm" onclick="closeModal('modal-create-vm')" data-i18n="cancel">Cancel</button>
+        <button id="btn-confirm-create-vm" class="btn-primary" onclick="doCreateVM()" data-i18n="create">Create</button>
       </div>
     </div>
   </div>
@@ -113,8 +133,8 @@
       <label><span data-i18n="iso_opt">ISO</span><select id="edit-iso-select"><option value="">None</option></select></label>
       <label><span data-i18n="boot_on_start">Boot on Start</span><input id="edit-onboot" type="checkbox"></label>
       <div class="modal-actions">
-        <button onclick="closeModal('modal-edit-vm')" data-i18n="cancel">Cancel</button>
-        <button class="btn-primary" onclick="doUpdateVM()" data-i18n="save">Save Changes</button>
+        <button id="btn-cancel-edit-vm" onclick="closeModal('modal-edit-vm')" data-i18n="cancel">Cancel</button>
+        <button id="btn-confirm-edit-vm" class="btn-primary" onclick="doUpdateVM()" data-i18n="save">Save Changes</button>
       </div>
     </div>
   </div>
@@ -128,7 +148,7 @@
         <div id="upload-progress-bar" style="width: 0%; height: 8px; background: var(--accent); transition: width 0.3s"></div>
       </div>
       <div class="modal-actions">
-        <button onclick="closeModal('modal-upload-iso')" data-i18n="cancel">Cancel</button>
+        <button id="btn-cancel-upload-iso" onclick="closeModal('modal-upload-iso')" data-i18n="cancel">Cancel</button>
         <button class="btn-primary" id="btn-do-upload" onclick="doUploadISO()" data-i18n="upload">Upload</button>
       </div>
     </div>
@@ -142,21 +162,20 @@
       <label><span data-i18n="bridge_addr">CIDR Address (optional)</span><input id="new-bridge-addr" type="text" placeholder="192.168.1.100/24"></label>
       <label><span data-i18n="bridge_port">Bridge Port (Physical Interface)</span><select id="new-bridge-ports"><option value="">None</option></select></label>
       <div class="modal-actions">
-        <button onclick="closeModal('modal-create-bridge')" data-i18n="cancel">Cancel</button>
-        <button class="btn-primary" onclick="doCreateBridge()" data-i18n="create">Create</button>
+        <button id="btn-cancel-create-bridge" onclick="closeModal('modal-create-bridge')" data-i18n="cancel">Cancel</button>
+        <button id="btn-confirm-create-bridge" class="btn-primary" onclick="doCreateBridge()" data-i18n="create">Create</button>
       </div>
     </div>
   </div>
 
-  <!-- Console Modal -->
   <div id="modal-console" class="modal" style="display:none">
     <div class="modal-card" style="width: 820px; padding: 1rem;">
       <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1rem">
         <h3 id="console-title" style="margin:0">Console</h3>
-        <button onclick="closeModal('modal-console')" style="background:none; border:none; color:var(--text2); cursor:pointer">✕ <span data-i18n="cancel">Close</span></button>
+        <button id="btn-close-console" onclick="closeModal('modal-console')" style="background:none; border:none; color:var(--text2); cursor:pointer">✕ <span data-i18n="close">Close</span></button>
       </div>
       <div id="noVNC_container" style="width: 100%; height: 500px; background: #000; display: flex; align-items: center; justify-content: center; color: #fff;">
-        <p>VNC Console Implementation Pending...</p>
+        <p data-i18n="vnc_loading">Starting VNC session...</p>
       </div>
     </div>
   </div>

@@ -19,7 +19,7 @@ const LANGS = {
     linux_bridges: 'Linux Bridges', create_bridge: '+ Create Bridge',
     create_vm_title: 'Create Virtual Machine', edit_vm_title: 'Edit Virtual Machine',
     upload_iso_title: 'Upload ISO File', create_bridge_title: 'Create Linux Bridge',
-    cancel: 'Cancel', create: 'Create', save: 'Save Changes', upload: 'Upload',
+    cancel: 'Cancel', create: 'Create', save: 'Save Changes', upload: 'Upload', close: 'Close',
     vm_id: 'VM ID', name: 'Name', memory: 'Memory (MB)', cores: 'CPU Cores',
     disk: 'Disk (GB)', iso_opt: 'ISO (optional)', boot_on_start: 'Boot on Start',
     bridge_name: 'Name', bridge_addr: 'CIDR Address (optional)',
@@ -52,7 +52,7 @@ const LANGS = {
     linux_bridges: 'Linux Bridges', create_bridge: '+ Crear Bridge',
     create_vm_title: 'Crear Máquina Virtual', edit_vm_title: 'Editar Máquina Virtual',
     upload_iso_title: 'Subir archivo ISO', create_bridge_title: 'Crear Linux Bridge',
-    cancel: 'Cancelar', create: 'Crear', save: 'Guardar Cambios', upload: 'Subir',
+    cancel: 'Cancelar', create: 'Crear', save: 'Guardar Cambios', upload: 'Subir', close: 'Cerrar',
     vm_id: 'ID de VM', name: 'Nombre', memory: 'Memoria (MB)', cores: 'Núcleos CPU',
     disk: 'Disco (GB)', iso_opt: 'ISO (opcional)', boot_on_start: 'Iniciar con el sistema',
     bridge_name: 'Nombre', bridge_addr: 'Dirección CIDR (opcional)',
@@ -510,9 +510,9 @@ async function applyNetwork() {
 // --- VNC Console ---
 
 async function showConsole(vmid, name) {
-  document.getElementById('console-title').textContent = `Console: ${name} (ID: ${vmid})`;
+  document.getElementById('console-title').textContent = `${t('action_console')}: ${name} (ID: ${vmid})`;
   const container = document.getElementById('noVNC_container');
-  container.innerHTML = '<div class="spinner" style="border-width: 3px; border-top-color: var(--accent); width: 40px; height: 40px; margin: 0 auto;"></div><p style="color: var(--text2); margin-top: 1rem; text-align: center;">Starting VNC session...</p>';
+  container.innerHTML = `<div class="spinner" style="border-width: 3px; border-top-color: var(--accent); width: 40px; height: 40px; margin: 0 auto;"></div><p style="color: var(--text2); margin-top: 1rem; text-align: center;">${t('vnc_loading')}</p>`;
   document.getElementById('modal-console').style.display = 'flex';
 
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
