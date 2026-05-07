@@ -3,7 +3,11 @@ services:
     build: .
     container_name: lulzvm
     privileged: true
-    network_mode: "host"
+    # Para desarrollo/pruebas en Windows/macOS (evita el "error cargando la web"):
+    ports:
+      - "8006:8006"
+    # Para producción en Linux (descomenta la línea de abajo y comenta 'ports'):
+    # network_mode: "host"
     devices:
       - /dev/kvm:/dev/kvm
     volumes:
