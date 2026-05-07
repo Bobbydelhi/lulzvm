@@ -174,5 +174,5 @@ MIT License — free to use, modify and distribute. See [LICENSE](LICENSE) for d
 ---
 
 <p align="center">
-  Made with ❤️ by the lulzVM community — <a href="https://github.com/Bobbydelhi/lulzvm/discussions">Join the discussion</a>
+  Made with ❤️ by the lulzVM community </a>
 </p>
