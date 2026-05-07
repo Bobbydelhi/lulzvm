@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lulzVM — Open Source Hypervisor</title>
+  <meta name="description" content="lulzVM — Lightweight open-source hypervisor management platform. Manage QEMU/KVM VMs and LXC containers from your browser.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Main Dashboard -->
+    <div id="main-screen" style="display:flex">
+      <nav class="sidebar">
+        <div class="brand">
+          <img src="/logo.png" alt="lulzVM" class="brand-logo">
+          <span>lulzVM</span>
+        </div>
+
+        <a href="#" class="nav-item active" data-view="dashboard" data-i18n="dashboard">Dashboard</a>
+        <a href="#" class="nav-item" data-view="vms" data-i18n="vms">Virtual Machines</a>
+        <a href="#" class="nav-item" data-view="containers" data-i18n="containers">Containers</a>
+        <a href="#" class="nav-item" data-view="storage" data-i18n="storage">Storage</a>
+        <a href="#" class="nav-item" data-view="network" data-i18n="network">Network</a>
+
+        <div class="nav-spacer"></div>
+
+        <!-- Language Switcher -->
+        <div id="lang-selector" class="lang-selector">
+          <button data-lang="en" onclick="setLang('en')" class="active">EN</button>
+          <button data-lang="es" onclick="setLang('es')">ES</button>
+        </div>
+      </nav>
+
+      <main class="content">
+        <!-- Community Banner -->
+        <div id="community-banner" class="community-banner">
+          <span id="community-msg" data-i18n="community_msg">lulzVM is open source — feel free to contribute, modify and improve it. Together we build something powerful.</span>
+          <a href="https://github.com/Bobbydelhi/lulzvm" target="_blank" id="community-link" data-i18n="community_link">Contribute on GitHub</a>
+          <button onclick="this.parentElement.style.display='none'" class="banner-close">✕</button>
+        </div>
+
+        <div id="view-dashboard" class="view">
+          <h2 data-i18n="node_overview">Node Overview</h2>
+          <div class="stats-grid" id="node-stats"></div>
+          <h2 data-i18n="vms">Virtual Machines</h2>
+          <div id="vm-table-container"></div>
+        </div>
+
+        <div id="view-vms" class="view" style="display:none">
+          <div class="view-header">
+            <h2 data-i18n="vms">Virtual Machines</h2>
+            <button class="btn-primary" onclick="showCreateVMModal()" data-i18n="create_vm">+ Create VM</button>
+          </div>
+          <div id="vms-list"></div>
+        </div>
+
+        <div id="view-containers" class="view" style="display:none">
+          <h2 data-i18n="containers">Containers</h2>
+          <div id="containers-list"></div>
+        </div>
+
+        <div id="view-storage" class="view" style="display:none">
+          <div class="view-header">
+            <h2 data-i18n="storage_pools">Storage Pools</h2>
+            <button class="btn-primary" onclick="showUploadISOModal()" data-i18n="upload_iso">Upload ISO</button>
+          </div>
+          <div id="storage-list"></div>
+          <h2 style="margin-top: 2rem" data-i18n="available_isos">Available ISOs</h2>
+          <div id="iso-list" class="stats-grid"></div>
+        </div>
+
+        <div id="view-network" class="view" style="display:none">
+          <div class="view-header">
+            <h2 data-i18n="net_config">Network Configuration</h2>
+            <button class="btn-primary" onclick="applyNetwork()" data-i18n="apply_changes">Apply Changes</button>
+          </div>
+          <h3 data-i18n="phys_ifaces" style="margin-bottom:.5rem">Physical Interfaces</h3>
+          <div id="interfaces-list"></div>
+          <h3 data-i18n="linux_bridges" style="margin-top:2rem; margin-bottom:.5rem">Linux Bridges</h3>
+          <div id="bridges-list"></div>
+          <button class="btn-sm btn-accent" style="margin-top:1rem" onclick="showCreateBridgeModal()" data-i18n="create_bridge">+ Create Bridge</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create VM Modal -->
+  <div id="modal-create-vm" class="modal" style="display:none">
+    <div class="modal-card">
+      <h3 data-i18n="create_vm_title">Create Virtual Machine</h3>
+      <label><span data-i18n="vm_id">VM ID</span><input id="new-vmid" type="number" value="100" min="100"></label>
+      <label><span data-i18n="name">Name</span><input id="new-name" type="text" data-i18n-ph="name" placeholder="my-vm"></label>
+      <label><span data-i18n="memory">Memory (MB)</span><input id="new-mem" type="number" value="512" min="32"></label>
+      <label><span data-i18n="cores">CPU Cores</span><input id="new-cores" type="number" value="1" min="1"></label>
+      <label><span data-i18n="disk">Disk (GB)</span><input id="new-disk" type="number" value="10" min="1"></label>
+      <label><span data-i18n="iso_opt">ISO (optional)</span><select id="new-iso-select"><option value="">None</option></select></label>
+      <div class="modal-actions">
+        <button onclick="closeModal('modal-create-vm')" data-i18n="cancel">Cancel</button>
+        <button class="btn-primary" onclick="doCreateVM()" data-i18n="create">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit VM Modal -->
+  <div id="modal-edit-vm" class="modal" style="display:none">
+    <div class="modal-card">
+      <h3 data-i18n="edit_vm_title">Edit Virtual Machine</h3>
+      <input type="hidden" id="edit-vmid">
+      <label><span data-i18n="name">Name</span><input id="edit-name" type="text"></label>
+      <label><span data-i18n="memory">Memory (MB)</span><input id="edit-mem" type="number" min="32"></label>
+      <label><span data-i18n="cores">CPU Cores</span><input id="edit-cores" type="number" min="1"></label>
+      <label><span data-i18n="iso_opt">ISO</span><select id="edit-iso-select"><option value="">None</option></select></label>
+      <label><span data-i18n="boot_on_start">Boot on Start</span><input id="edit-onboot" type="checkbox"></label>
+      <div class="modal-actions">
+        <button onclick="closeModal('modal-edit-vm')" data-i18n="cancel">Cancel</button>
+        <button class="btn-primary" onclick="doUpdateVM()" data-i18n="save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload ISO Modal -->
+  <div id="modal-upload-iso" class="modal" style="display:none">
+    <div class="modal-card">
+      <h3 data-i18n="upload_iso_title">Upload ISO File</h3>
+      <label><span data-i18n="iso_select">Select .iso file</span><input id="iso-file" type="file" accept=".iso"></label>
+      <div id="upload-progress" style="display:none; width: 100%; background: var(--bg3); border-radius: 4px; margin-top: 1rem; overflow: hidden;">
+        <div id="upload-progress-bar" style="width: 0%; height: 8px; background: var(--accent); transition: width 0.3s"></div>
+      </div>
+      <div class="modal-actions">
+        <button onclick="closeModal('modal-upload-iso')" data-i18n="cancel">Cancel</button>
+        <button class="btn-primary" id="btn-do-upload" onclick="doUploadISO()" data-i18n="upload">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Bridge Modal -->
+  <div id="modal-create-bridge" class="modal" style="display:none">
+    <div class="modal-card">
+      <h3 data-i18n="create_bridge_title">Create Linux Bridge</h3>
+      <label><span data-i18n="bridge_name">Name</span><input id="new-bridge-name" type="text" placeholder="lulzbr0" value="lulzbr0"></label>
+      <label><span data-i18n="bridge_addr">CIDR Address (optional)</span><input id="new-bridge-addr" type="text" placeholder="192.168.1.100/24"></label>
+      <label><span data-i18n="bridge_port">Bridge Port (Physical Interface)</span><select id="new-bridge-ports"><option value="">None</option></select></label>
+      <div class="modal-actions">
+        <button onclick="closeModal('modal-create-bridge')" data-i18n="cancel">Cancel</button>
+        <button class="btn-primary" onclick="doCreateBridge()" data-i18n="create">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Console Modal -->
+  <div id="modal-console" class="modal" style="display:none">
+    <div class="modal-card" style="width: 820px; padding: 1rem;">
+      <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1rem">
+        <h3 id="console-title" style="margin:0">Console</h3>
+        <button onclick="closeModal('modal-console')" style="background:none; border:none; color:var(--text2); cursor:pointer">✕ <span data-i18n="cancel">Close</span></button>
+      </div>
+      <div id="noVNC_container" style="width: 100%; height: 500px; background: #000; display: flex; align-items: center; justify-content: center; color: #fff;">
+        <p>VNC Console Implementation Pending...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=4"></script>
+</body>
+</html>

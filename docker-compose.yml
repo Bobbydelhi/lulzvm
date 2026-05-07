@@ -1,0 +1,21 @@
+services:
+  lulzvm:
+    build: .
+    container_name: lulzvm
+    privileged: true
+    network_mode: "host"
+    devices:
+      - /dev/kvm:/dev/kvm
+    volumes:
+      - lulzvm_data:/var/lib/lulzvm
+      - lulzvm_config:/etc/lulzvm
+      - lulzvm_lxc:/var/lib/lxc
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+
+volumes:
+  lulzvm_data:
+  lulzvm_config:
+  lulzvm_lxc:
