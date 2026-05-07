@@ -21,10 +21,14 @@ async def list_vms():
     result = []
     for cfg in vms:
         vmid = cfg["vm"]["vmid"]
+        real_status = vm_manager.get_status(vmid)
+        if cfg["vm"].get("status") != real_status:
+            cfg["vm"]["status"] = real_status
+            vm_manager.save_config(vmid, cfg)
         result.append({
             "vmid":      vmid,
             "name":      cfg["vm"]["name"],
-            "status":    cfg["vm"]["status"],
+            "status":    real_status,
             "memory_mb": cfg["hardware"]["memory_mb"],
             "cores":     cfg["hardware"]["cores"],
         })
